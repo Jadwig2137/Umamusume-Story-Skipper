@@ -1,6 +1,6 @@
 # Umamusume Story Skipper 
 
-A Python bot that can find and click elements on your screen using OCR (Optical Character Recognition) and YOLO object detection. Perfect for automating tasks where you need to interact with buttons, text, or objects on screen.
+A Python bot that can find and click elements on your screen using OCR (Optical Character Recognition) and YOLO object detection. Perfect for getting free Carats without paying attention 😎
 
 
 ## Features
@@ -55,7 +55,7 @@ pip install -r requirements.txt
 ## Project Structure
 
 ```
-umastoryskipper/
+Umamusume-Story-Skipper/
 ├── bot.py                 # Core bot functionality (OCR, YOLO, automation)
 ├── bot_gui.py            # Graphical user interface with live preview
 ├── interactive_bot.py    # Command-line interactive mode
@@ -67,25 +67,28 @@ umastoryskipper/
 
 ## Usage
 
-### Launcher (Recommended)
+### Launcher 
 Run the launcher for an easy menu to choose between GUI and CLI modes:
 ```bash
 python launcher.py
 ```
+### Ability to create your own automation
 
-### GUI Mode
+Create a TXT file, input all of the commands that you'd want the program to make (all commands under Interactive Mode), save the file, and either choose it in custom files (GUI), or use the ```run filename.txt``` command in Interactive Mode.
+
+There's 3 other functions besides all of those commands like: 
+
+- # **IF_FAIL_THEN** "command" : A simple IF statement, if **true** continue execution, if **false** then do the command specified.
+- # **STOP_ON_FAIL** : Stops execution after *3* attempts (Number of attempts changable for advanced users on lines **186**, **301** and **412**
+- # **LOOP_IF_SUCCESS "line-number" : Simple loop function that goes back to the line defined by user after completing the whole sequence.
+
+### GUI Mode (Recommended for ease of use) 
 Launch the graphical interface:
 ```bash
 python bot_gui.py
 ```
 
-### CLI Mode
-Use the command-line interface:
-```bash
-python interactive_bot.py
-```
-
-### Interactive Mode (Recommended)
+### Interactive Mode (Recommended for advanced users)
 
 The easiest way to use the bot:
 
@@ -104,57 +107,6 @@ Then use commands like:
 > press enter
 ```
 
-### Command Line Mode
-
-**Find text using OCR:**
-```bash
-python bot.py --mode text --target "Login Button"
-python bot.py --mode text --target "Login Button" --click
-```
-
-**Find objects using YOLO:**
-```bash
-python bot.py --mode object --target "button" --click
-python bot.py --mode object --target "person" --index 1 --click
-```
-
-**List all detected objects:**
-```bash
-python bot.py --mode list
-```
-
-**Options:**
-- `--mode`: `text`, `object`, or `list`
-- `--target`: Text or object class to find
-- `--index`: Which occurrence to use (0 = first, default)
-- `--confidence`: YOLO confidence threshold (0.0-1.0, default: 0.5)
-- `--click`: Actually click the found element (otherwise just locates)
-
-## Examples
-
-**Click a login button:**
-```bash
-python interactive_bot.py
-> click text "Login"
-```
-
-**Find and click the second person detected:**
-```bash
-python interactive_bot.py
-> click object "person" 1
-```
-
-**See what objects are on screen:**
-```bash
-python interactive_bot.py
-> list objects
-```
-
-**Click at specific coordinates:**
-```bash
-python interactive_bot.py
-> click 640 480
-```
 
 ## Safety Features
 
