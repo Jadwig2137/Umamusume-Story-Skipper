@@ -97,7 +97,7 @@ Then use commands like:
 > click 500 300
 > press enter
 ```
-### Ability to create your own automation
+## Ability to create your own automation
 
 Create a TXT file, input all of the commands that you'd want the program to make (all commands under Interactive Mode), save the file, and either choose it in custom files (GUI), or use the ```run filename.txt``` command in Interactive Mode.
 
