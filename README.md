@@ -79,7 +79,7 @@ Create a TXT file, input all of the commands that you'd want the program to make
 There's 3 other functions besides all of those commands like: 
 
 - # **IF_FAIL_THEN** "command" : A simple IF statement, if **true** continue execution, if **false** then do the command specified.
-- # **STOP_ON_FAIL** : Stops execution after *3* attempts (Number of attempts changable for advanced users on lines **186**, **301** and **412**
+- # **STOP_ON_FAIL** : Stops execution after *3* attempts (Number of attempts changable for advanced users on lines **186**, **301** and **412**)
 - # **LOOP_IF_SUCCESS** "line-number" : Simple loop function that goes back to the line defined by user after completing the whole sequence.
 
 ### GUI Mode (Recommended for ease of use) 
