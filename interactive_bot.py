@@ -1,10 +1,4 @@
-"""
-Interactive mode for the screen automation bot
-Run this for an easier command-line interface
-"""
-
 import os
-# Fix OpenMP initialization conflict on Windows
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 from bot import ScreenBot

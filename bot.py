@@ -1,10 +1,4 @@
-"""
-Screen Automation Bot with OCR and YOLO Object Detection
-Can find and click elements on screen using text recognition or object detection
-"""
-
 import os
-# Fix OpenMP initialization conflict on Windows
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 import pyautogui

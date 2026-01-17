@@ -1,10 +1,4 @@
-"""
-GUI Application for Screen Automation Bot
-Modern interface for running commands and visualizing detections
-"""
-
 import os
-# Fix OpenMP initialization conflict on Windows
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 import tkinter as tk

@@ -1,8 +1,3 @@
-"""
-Screen Automation Bot Launcher
-Simple menu to choose between GUI, CLI, or exit
-"""
-
 import os
 import sys
 import subprocess
