@@ -1,6 +1,6 @@
 # Umamusume Story Skipper 
 
-A Python bot that can find and click elements on your screen using OCR (Optical Character Recognition) and YOLO object detection. Perfect for getting free Carats without paying attention 😎  (most of the time lol)
+A Python bot that can find and click elements on your screen using OCR (Optical Character Recognition) and YOLO object detection. Perfect for getting free Carats without paying attention or just lazy bums like me 😎  (most of the time lol)
 
 
 ## Features
