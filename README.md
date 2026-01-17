@@ -72,15 +72,6 @@ Run the launcher for an easy menu to choose between GUI and CLI modes:
 ```bash
 python launcher.py
 ```
-### Ability to create your own automation
-
-Create a TXT file, input all of the commands that you'd want the program to make (all commands under Interactive Mode), save the file, and either choose it in custom files (GUI), or use the ```run filename.txt``` command in Interactive Mode.
-
-There's 3 other functions besides all of those commands like: 
-
-- ```# **IF_FAIL_THEN** "command"``` : A simple IF statement, if **true** continue execution, if **false** then do the command specified.
-- ```# **STOP_ON_FAIL**``` : Stops execution after *3* attempts (Number of attempts changable for advanced users on lines **186**, **301** and **412**)
-- ```# **LOOP_IF_SUCCESS** "line-number"``` : Simple loop function that goes back to the line defined by user after completing the whole sequence.
 
 ### GUI Mode (Recommended for ease of use) 
 Launch the graphical interface:
@@ -106,6 +97,15 @@ Then use commands like:
 > click 500 300
 > press enter
 ```
+### Ability to create your own automation
+
+Create a TXT file, input all of the commands that you'd want the program to make (all commands under Interactive Mode), save the file, and either choose it in custom files (GUI), or use the ```run filename.txt``` command in Interactive Mode.
+
+There's 3 other functions besides all of those commands like: 
+
+- ```# **IF_FAIL_THEN** "command"``` : A simple IF statement, if **true** continue execution, if **false** then do the command specified.
+- ```# **STOP_ON_FAIL**``` : Stops execution after *3* attempts (Number of attempts changable for advanced users on lines **186**, **301** and **412**)
+- ```# **LOOP_IF_SUCCESS** "line-number"``` : Simple loop function that goes back to the line defined by user after completing the whole sequence.
 
 
 ## Safety Features
