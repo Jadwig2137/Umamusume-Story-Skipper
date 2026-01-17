@@ -101,7 +101,6 @@ Then use commands like:
 > click object "person" 1
 > list objects
 > click 500 300
-> type "Hello World"
 > press enter
 ```
 
