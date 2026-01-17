@@ -236,6 +236,17 @@ class ScreenBot:
         pyautogui.click(x, y, button=button, clicks=clicks)
         time.sleep(0.2)  # Small delay after clicking
     
+    def click_current(self, button: str = 'left', clicks: int = 1):
+        """Click at current cursor position"""
+        print(f"Clicking at current position with {button} button, {clicks} times")
+        pyautogui.click(button=button, clicks=clicks)
+        time.sleep(0.2)  # Small delay after clicking
+    
+    def move_rel(self, x_offset: int, y_offset: int):
+        """Move mouse cursor relative to current position"""
+        print(f"Moving cursor by ({x_offset}, {y_offset})")
+        pyautogui.moveRel(x_offset, y_offset)
+    
     def press_key(self, key: str, presses: int = 1):
         """Press a keyboard key"""
         print(f"Pressing '{key}' {presses} times")
@@ -272,6 +283,33 @@ class ScreenBot:
         self.click(x, y)
         return True
     
+    def find_and_point_text(self, text: str, index: int = 0) -> bool:
+        """
+        Find text using OCR and move cursor to it
+        
+        Args:
+            text: Text to find and point to
+            index: Which occurrence to point to if multiple found (0 = first)
+            
+        Returns:
+            True if found and pointed, False otherwise
+        """
+        print(f"Searching for text: '{text}'...")
+        matches = self.find_text_ocr(text)
+        
+        if not matches:
+            print(f"Text '{text}' not found on screen")
+            return False
+        
+        if index >= len(matches):
+            print(f"Index {index} out of range. Found {len(matches)} occurrence(s). Using index {len(matches)-1} instead.")
+            index = len(matches) - 1
+        
+        x, y = matches[index]
+        print(f"Moving cursor to ({x}, {y})")
+        pyautogui.moveTo(x, y)
+        return True
+    
     def find_and_click_object(self, object_class: str, index: int = 0) -> bool:
         """
         Find object using YOLO and click it
@@ -296,6 +334,33 @@ class ScreenBot:
         
         x, y, class_name, confidence = detections[index]
         self.click(x, y)
+        return True
+    
+    def find_and_point_object(self, object_class: str, index: int = 0) -> bool:
+        """
+        Find object using YOLO and move cursor to it
+        
+        Args:
+            object_class: Class name to find (e.g., 'button', 'person')
+            index: Which occurrence to point to if multiple found
+            
+        Returns:
+            True if found and pointed, False otherwise
+        """
+        print(f"Searching for object class: '{object_class}'...")
+        detections = self.find_objects_yolo(object_class)
+        
+        if not detections:
+            print(f"Object class '{object_class}' not found on screen")
+            return False
+        
+        if index >= len(detections):
+            print(f"Index {index} out of range. Found {len(detections)} occurrence(s). Using index {len(detections)-1} instead.")
+            index = len(detections) - 1
+        
+        x, y, class_name, confidence = detections[index]
+        print(f"Moving cursor to ({x}, {y})")
+        pyautogui.moveTo(x, y)
         return True
     
     def list_available_objects(self, screen_img: Optional[np.ndarray] = None):

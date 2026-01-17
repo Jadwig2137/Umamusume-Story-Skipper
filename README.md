@@ -89,13 +89,18 @@ python interactive_bot.py
 
 Then use commands like:
 ```
-> find text "Login"
-> click text "Submit"
-> find object "button"
+> find text "Login" 1
+> click text "Submit" 1 
+> find object "button" 1
 > click object "person" 1
 > list objects
 > click 500 300
+> point text "Login" 1
+> point object "button" 1 
 > press enter
+> move +20 -10
+> click left/right
+
 ```
 ## Ability to create your own automation
 

@@ -97,13 +97,9 @@ class BotGUI:
         # Built-in sequence buttons
         ttk.Label(parent, text="Built-in Sequences:", font=("Arial", 10, "bold")).grid(row=0, column=0, columnspan=2, sticky=tk.W, pady=(0, 5))
         
-        self.horizontal_btn = ttk.Button(parent, text="▶ Horizontal", 
-                                         command=self.run_horizontal, state="disabled")
-        self.horizontal_btn.grid(row=1, column=0, sticky=(tk.W, tk.E), padx=(0, 5), pady=2)
-        
         self.vertical_btn = ttk.Button(parent, text="▶ Vertical", 
                                        command=self.run_vertical, state="disabled")
-        self.vertical_btn.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=2)
+        self.vertical_btn.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=2)
         
         # Repeat count
         ttk.Label(parent, text="Repeat:").grid(row=2, column=0, sticky=tk.W, pady=(10, 5))
@@ -234,7 +230,6 @@ class BotGUI:
     
     def enable_buttons(self):
         """Enable all control buttons"""
-        self.horizontal_btn.config(state="normal")
         self.vertical_btn.config(state="normal")
         self.runfile_btn.config(state="normal")
         self.viz_text_btn.config(state="normal")
@@ -324,76 +319,6 @@ class BotGUI:
                 self.log(f"✗ Error: {e}")
         
         threading.Thread(target=visualize, daemon=True).start()
-    
-    def run_horizontal(self):
-        """Run horizontal sequence"""
-        if not self.bot or self.bot_initializing:
-            return
-        
-        try:
-            repeat_count = int(self.repeat_var.get())
-        except ValueError:
-            repeat_count = 1
-        
-        self.stop_flag.clear()
-        self.update_status("Running horizontal sequence...", "blue")
-        self.stop_btn.config(state="normal")
-        self.disable_buttons()
-        
-        def run():
-            try:
-                from interactive_bot import execute_command_strings
-                
-                # Capture print output
-                old_stdout = sys.stdout
-                sys.stdout = StringIO()
-                
-                horizontal_commands = """click text x20 2
-# IF_FAIL_THEN click text x5o 2
-click text ok 1 
-wait 3
-click 1800 1000 
-wait 1
-click 1800 300
-wait 3
-click text close 1 
-wait 4
-click text cancel 1
-# STOP_ON_FAIL
-# LOOP_IF_SUCCESS 1"""
-                
-                self.log(f"Starting horizontal sequence (x{repeat_count})...")
-                for i in range(repeat_count):
-                    if self.stop_flag.is_set():
-                        self.log("✗ Execution stopped by user")
-                        break
-                    
-                    if repeat_count > 1:
-                        self.log(f"\n--- Iteration {i+1} of {repeat_count} ---")
-                    
-                    execute_command_strings(self.bot, horizontal_commands)
-                    
-                    # Capture any output
-                    output = sys.stdout.getvalue()
-                    if output:
-                        self.log(output.strip())
-                        sys.stdout = StringIO()
-                    
-                    if i < repeat_count - 1 and not self.stop_flag.is_set():
-                        time.sleep(1)
-                
-                # Restore stdout
-                sys.stdout = old_stdout
-                self.log("✓ Horizontal sequence complete!")
-            except Exception as e:
-                self.log(f"✗ Error: {e}")
-            finally:
-                self.root.after(0, lambda: self.enable_buttons())
-                self.root.after(0, lambda: self.stop_btn.config(state="disabled"))
-                self.root.after(0, lambda: self.update_status("Ready", "green"))
-        
-        self.execution_thread = threading.Thread(target=run, daemon=True)
-        self.execution_thread.start()
     
     def run_vertical(self):
         """Run vertical sequence"""
@@ -534,7 +459,6 @@ click text cancel 1
     
     def disable_buttons(self):
         """Disable control buttons during execution"""
-        self.horizontal_btn.config(state="disabled")
         self.vertical_btn.config(state="disabled")
         self.runfile_btn.config(state="disabled")
         self.preview_btn.config(state="disabled")

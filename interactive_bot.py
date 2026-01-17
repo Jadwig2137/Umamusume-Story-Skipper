@@ -13,10 +13,14 @@ Available commands:
   help                    - Show this help message
   find text <text>        - Find text on screen using OCR
   click text <text> [n]   - Click nth occurrence of text (default: first)
+  point text <text> [n]   - Move cursor to nth occurrence of text (default: first)
   find object <class>     - Find object class using YOLO
   click object <class> [n]- Click nth occurrence of object (default: first)
+  point object <class> [n]- Move cursor to nth occurrence of object (default: first)
   list objects            - List all detected objects on screen
   click <x> <y>           - Click at specific coordinates
+  click left|right        - Click at current cursor position with left/right button
+  move <x_offset> <y_offset> - Move cursor relative to current position
   type <text>             - Type text
   press <key>             - Press a keyboard key (e.g., 'enter', 'space', 'esc')
   wait <seconds>          - Wait for specified number of seconds (e.g., 'wait 2', 'wait 1.5')
@@ -27,7 +31,6 @@ Available commands:
   region set <x> <y> <w> <h> - Set screen region (only detect in this area)
   region clear            - Clear region (detect on full screen)
   region show             - Show current region settings
-  horizontal [repeat]     - Run built-in horizontal sequence
   vertical [repeat]       - Run built-in vertical sequence
   runfile <file> [repeat] - Execute commands from a custom file (e.g., 'runfile myfile.txt 5')
   exit/quit               - Exit the bot
@@ -35,14 +38,17 @@ Available commands:
 Examples:
   > find text "Login"
   > click text "Submit" 0
+  > point text "Submit" 0
   > find object "button"
   > click object "person" 1
+  > point object "person" 1
   > list objects
   > click 500 300
+  > click left
+  > click right
+  > move 50 -10
   > type "Hello World"
   > press enter
-  > horizontal
-  > horizontal 5
   > vertical
   > runfile myfile.txt
   > visualize text
@@ -223,7 +229,17 @@ def execute_single_command(bot, command: str, retry_count: int = 3, retry_delay:
                         return True
             
             elif cmd == 'click':
-                if len(parts) == 3:
+                if len(parts) == 2:
+                    # Click at current position
+                    button = parts[1].lower()
+                    if button in ['left', 'right']:
+                        bot.click_current(button=button)
+                        return True
+                    else:
+                        print(f"  ✗ Invalid button: {button}. Use 'left' or 'right'")
+                        return False
+                
+                elif len(parts) == 3:
                     # Direct coordinates - no retry needed, always succeeds
                     try:
                         x, y = int(parts[1]), int(parts[2])
@@ -252,6 +268,26 @@ def execute_single_command(bot, command: str, retry_count: int = 3, retry_delay:
                                 print(f"    ✓ Clicked on retry attempt {attempt + 1}")
                             return True
             
+            elif cmd == 'point':
+                if len(parts) >= 3:
+                    mode = parts[1].lower()
+                    target = ' '.join(parts[2:-1]) if len(parts) > 3 else parts[2]
+                    index = int(parts[-1]) if len(parts) > 3 and parts[-1].isdigit() else 0
+                    
+                    if mode == 'text':
+                        success = bot.find_and_point_text(target, index)
+                        if success:
+                            if attempt > 0:
+                                print(f"    ✓ Pointed on retry attempt {attempt + 1}")
+                            return True
+                    
+                    elif mode == 'object':
+                        success = bot.find_and_point_object(target, index)
+                        if success:
+                            if attempt > 0:
+                                print(f"    ✓ Pointed on retry attempt {attempt + 1}")
+                            return True
+            
             elif cmd == 'type' and len(parts) >= 2:
                 text = ' '.join(parts[1:])
                 bot.type_text(text)
@@ -261,6 +297,15 @@ def execute_single_command(bot, command: str, retry_count: int = 3, retry_delay:
                 key = parts[1].lower()
                 bot.press_key(key)
                 return True
+            
+            elif cmd == 'move' and len(parts) == 3:
+                try:
+                    x_offset, y_offset = int(parts[1]), int(parts[2])
+                    bot.move_rel(x_offset, y_offset)
+                    return True
+                except ValueError:
+                    print(f"  ✗ Invalid offsets: {parts[1]} {parts[2]}")
+                    return False
             
             elif cmd == 'list' and len(parts) >= 2 and parts[1].lower() == 'objects':
                 bot.list_available_objects()
@@ -471,7 +516,15 @@ def main():
                     print(f"Unknown find mode: {mode}. Use 'text' or 'object'")
             
             elif cmd == 'click':
-                if len(parts) == 3:
+                if len(parts) == 2:
+                    # Click at current position
+                    button = parts[1].lower()
+                    if button in ['left', 'right']:
+                        bot.click_current(button=button)
+                    else:
+                        print(f"Invalid button: {button}. Use 'left' or 'right'")
+                
+                elif len(parts) == 3:
                     # Direct coordinates
                     try:
                         x, y = int(parts[1]), int(parts[2])
@@ -497,7 +550,35 @@ def main():
                     else:
                         print(f"Unknown click mode: {mode}. Use 'text' or 'object'")
                 else:
-                    print("Usage: click <mode> <target> [index] or click <x> <y>")
+                    print("Usage: click <mode> <target> [index], click <x> <y>, or click <left|right>")
+            
+            elif cmd == 'point':
+                if len(parts) >= 3:
+                    mode = parts[1].lower()
+                    target = ' '.join(parts[2:-1]) if len(parts) > 3 else parts[2]
+                    index = int(parts[-1]) if len(parts) > 3 and parts[-1].isdigit() else 0
+                    
+                    if mode == 'text':
+                        success = bot.find_and_point_text(target, index)
+                        if not success:
+                            print("Failed to find and point to text")
+                    
+                    elif mode == 'object':
+                        success = bot.find_and_point_object(target, index)
+                        if not success:
+                            print("Failed to find and point to object")
+                    
+                    else:
+                        print(f"Unknown point mode: {mode}. Use 'text' or 'object'")
+                else:
+                    print("Usage: point <mode> <target> [index]")
+            
+            elif cmd == 'move' and len(parts) == 3:
+                try:
+                    x_offset, y_offset = int(parts[1]), int(parts[2])
+                    bot.move_rel(x_offset, y_offset)
+                except ValueError:
+                    print("Invalid offsets. Use: move <x_offset> <y_offset>")
             
             elif cmd == 'list' and len(parts) >= 2 and parts[1].lower() == 'objects':
                 bot.list_available_objects()
@@ -564,47 +645,6 @@ def main():
                     else:
                         print(f"Unknown region command: {subcmd}")
             
-            elif cmd == 'horizontal':
-                repeat_count = 1
-                if len(parts) >= 2:
-                    try:
-                        repeat_count = int(parts[1])
-                        if repeat_count < 1:
-                            print("Repeat count must be at least 1")
-                            continue
-                    except ValueError:
-                        print(f"Invalid repeat count: {parts[1]}. Using default (1)")
-                        repeat_count = 1
-                
-                print("Executing built-in horizontal sequence")
-                print("Retry settings: 3 attempts, 1.5s delay")
-                print("-" * 50)
-                
-                # Built-in horizontal sequence
-                horizontal_commands = """click text x20 2
-# IF_FAIL_THEN click text x5o 2
-click text ok 1 
-wait 3
-click 1800 1000 
-wait 1
-click 1800 300
-wait 3
-click text close 1 
-wait 4
-click text cancel 1
-# STOP_ON_FAIL
-# LOOP_IF_SUCCESS 1"""
-                
-                for iteration in range(repeat_count):
-                    if repeat_count > 1:
-                        print(f"\n{'='*50}")
-                        print(f"ITERATION {iteration + 1} of {repeat_count}")
-                        print(f"{'='*50}\n")
-                    execute_command_strings(bot, horizontal_commands)
-                    if iteration < repeat_count - 1:
-                        print(f"\n⏳ Waiting 1 second before next iteration...\n")
-                        time.sleep(1)
-            
             elif cmd == 'vertical':
                 repeat_count = 1
                 if len(parts) >= 2:
@@ -626,12 +666,14 @@ click text cancel 1
 # IF_FAIL_THEN click text x5o 2
 click text ok 1 
 wait 3
-click 900 1030 
-wait 1
-click 900 700
-wait 3
+point text auto 1
+move +70 0
+click left
+move 0 -350
+click left
+wait 2
 click text close 1 
-wait 4
+wait 1
 click text cancel 1
 # STOP_ON_FAIL
 # LOOP_IF_SUCCESS 1"""
